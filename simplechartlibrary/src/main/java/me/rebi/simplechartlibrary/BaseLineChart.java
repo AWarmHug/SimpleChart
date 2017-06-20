@@ -229,6 +229,10 @@ public abstract class BaseLineChart extends BaseChart {
                 trueDownX = event.getX();
                 downX = trueDownX + getScrollX();
 
+                if (!mScroller.isFinished()){
+                    mScroller.abortAnimation();
+                }
+
                 if (rectF.right > mWidth) {
                     return true;
                 }
