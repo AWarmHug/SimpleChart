@@ -5,8 +5,11 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.widget.Scroller;
 
 import java.util.List;
 
@@ -17,7 +20,7 @@ import java.util.List;
  * 内容: 折线图,柱状图基类,绘制x,y轴
  */
 public abstract class BaseLineChart extends BaseChart {
-
+    private static final String TAG = "BaseLineChart";
     /**
      * 值
      */
@@ -79,6 +82,12 @@ public abstract class BaseLineChart extends BaseChart {
 
     protected int ySpaceValue;
 
+    private Scroller mScroller;
+
+    /**
+     * 整个控件的矩形
+     */
+    private RectF rectF;
 
 
     public BaseLineChart(Context context) {
@@ -113,8 +122,8 @@ public abstract class BaseLineChart extends BaseChart {
             }
         }
         typedArray.recycle();
-        leftSpace=pointLength+axisTextSize*2;
-        bottomSpace=pointLength+axisTextSize+DisplayUtil.dp2px(context,5);
+        leftSpace = pointLength + axisTextSize * 2;
+        bottomSpace = pointLength + axisTextSize + DisplayUtil.dp2px(context, 5);
 
         linesPaint = new Paint();
         linesPaint.setColor(axisLinesColor);
@@ -127,20 +136,11 @@ public abstract class BaseLineChart extends BaseChart {
         textPaint.setTextSize(axisTextSize);
         textPaint.setAntiAlias(true);
 
+        mScroller = new Scroller(context);
+        rectF = new RectF();
 
     }
 
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -151,7 +151,7 @@ public abstract class BaseLineChart extends BaseChart {
     public void drawBody(Canvas canvas, float[] v) {
         drawXLine(canvas);
         drawYLine(canvas);
-        drawBar(canvas,values,v,ySpace/ySpaceValue);
+        drawBar(canvas, values, v, ySpace / ySpaceValue);
     }
 
     protected abstract void drawBar(Canvas canvas, List<Value> values, float[] v, double proportion);
@@ -159,16 +159,21 @@ public abstract class BaseLineChart extends BaseChart {
     @Override
     public void initValues(List<Value> values) {
         super.initValues(values);
-        this.values=values;
+        this.values = values;
         maxValue = values.get(0).getValue();
         xLineWidth = xSpace * (values.size() + 2);
+        rectF.left = 0;
+        rectF.top = 0;
+        rectF.right = leftSpace + xLineWidth;
+        rectF.bottom = mHeight;
+
         for (int i = 0; i < values.size(); i++) {
             if (i < values.size() - 1) {
                 if (maxValue < values.get(i + 1).getValue()) {
                     maxValue = values.get(i + 1).getValue();
                 }
             }
-            animation((float) values.get(i).getValue(),i,animationTime);
+            animation((float) values.get(i).getValue(), i, animationTime);
         }
         ySpaceValue = (int) (maxValue / 6);
 
@@ -188,12 +193,13 @@ public abstract class BaseLineChart extends BaseChart {
         for (int i = 0; i < values.size(); i++) {
             canvas.drawLine(leftSpace + xSpace * (i + 1), mHeight - bottomSpace + pointLength, leftSpace + xSpace * (i + 1), mHeight - bottomSpace, linesPaint);
             textPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(values.get(i).getStr(),leftSpace + xSpace * (i + 1),mHeight - bottomSpace + pointLength+ axisTextSize, textPaint);
+            canvas.drawText(values.get(i).getStr(), leftSpace + xSpace * (i + 1), mHeight - bottomSpace + pointLength + axisTextSize, textPaint);
         }
     }
 
     /**
      * 绘制y线
+     *
      * @param canvas
      */
     private void drawYLine(Canvas canvas) {
@@ -202,12 +208,80 @@ public abstract class BaseLineChart extends BaseChart {
         canvas.drawLine(leftSpace + 10, titleHeight + 20, leftSpace, titleHeight, linesPaint);
         textPaint.setTextAlign(Paint.Align.LEFT);
         canvas.drawText(yName, leftSpace + 15, titleHeight + axisTextSize, textPaint);
-        ySpace = (mHeight - titleHeight - bottomSpace-axisTextSize-DisplayUtil.dp2px(context,3)) / 7;
-        Log.i("***", "drawYLine: " + titleHeight);
+        ySpace = (mHeight - titleHeight - bottomSpace - axisTextSize - DisplayUtil.dp2px(context, 3)) / 7;
         for (int i = 1; i < 7; i++) {
-            canvas.drawLine(leftSpace - pointLength, (mHeight- bottomSpace) - ySpace * i, leftSpace, (mHeight- bottomSpace) - ySpace * i, linesPaint);
+            canvas.drawLine(leftSpace - pointLength, (mHeight - bottomSpace) - ySpace * i, leftSpace, (mHeight - bottomSpace) - ySpace * i, linesPaint);
             textPaint.setTextAlign(Paint.Align.RIGHT);
-            canvas.drawText(String.valueOf(ySpaceValue *(i)),leftSpace - pointLength,(mHeight - bottomSpace) - ySpace * i+ axisTextSize /2, textPaint);
+            canvas.drawText(String.valueOf(ySpaceValue * (i)), leftSpace - pointLength, (mHeight - bottomSpace) - ySpace * i + axisTextSize / 2, textPaint);
+        }
+
+    }
+
+    float trueDownX;
+
+    float downX, XX;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                trueDownX = event.getX();
+                downX = trueDownX + getScrollX();
+
+                if (rectF.right > mWidth) {
+                    return true;
+                }
+
+            case MotionEvent.ACTION_MOVE:
+                XX = event.getX() - downX;
+                scrollTo(-(int) XX, 0);
+                break;
+            case MotionEvent.ACTION_UP:
+
+                if ((Math.abs(velocityX) > mMinimumVelocity)) {
+                    flingX((int) -velocityX);
+                } else if (getScrollX() < 0) {
+                    startScrollX(getScrollX(), -getScrollX());
+                } else if (getScrollX() > (rectF.right - mWidth)) {
+                    startScrollX(getScrollX(), (int) (rectF.right - mWidth) - getScrollX());
+                }
+                Log.d(TAG, "startX=" + getScrollX() + "velocityX=" + velocityX);
+                break;
+        }
+
+
+        return false;
+    }
+
+    /**
+     * 只控制X轴的Scroll
+     * @param x
+     * @param dx
+     */
+    private void startScrollX(int x, int dx) {
+        mScroller.startScroll(x, 0, dx, 0, 250);
+        invalidate();
+    }
+
+    /**
+     * 只控制X轴的fling
+     */
+    private void flingX(int velocityX) {
+        mScroller.fling(getScrollX(), 0, velocityX, 0, 0, (int) (rectF.right - mWidth), 0, 0);
+        Log.d(TAG, "flingX: startX=" + getScrollX() + "velocityX=" + velocityX + "maxX" + (int) (rectF.right - mWidth));
+        invalidate();
+    }
+
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+
+        if (mScroller.computeScrollOffset()) {
+            scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+            invalidate();
+
         }
 
     }

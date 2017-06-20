@@ -7,7 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import java.util.List;
 
@@ -25,6 +28,32 @@ public abstract class BaseChart extends View {
      * 控件宽高
      */
     protected int viewWidth,viewHeight;
+
+
+
+    /**
+     * 获取滑动速率的类
+     */
+    private VelocityTracker mVelocityTracker;
+
+    /**
+     * 最大滑动速率，用于计算当前的滑动速度 {@link VelocityTracker#computeCurrentVelocity(int, float)}
+     */
+    protected int mMaximumVelocity;
+
+    protected int mMinimumVelocity;
+
+
+
+    /**
+     * 默认滑动过关速率
+     */
+    private final int mVelocity = 1000;
+
+
+    protected float velocityX, velocityY;
+
+    protected int mTouchSlop;
 
 
     /**
@@ -90,6 +119,13 @@ public abstract class BaseChart extends View {
         titlePaint.setColor(titleColor);
         titlePaint.setTextSize(titleSize);
         titlePaint.setTextAlign(Paint.Align.CENTER);
+//        getResources().getDisplayMetrics().
+        ViewConfiguration configuration = ViewConfiguration.get(context);
+        mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
+
+        mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+        mTouchSlop = configuration.getScaledPagingTouchSlop();
+
     }
 
     @Override
@@ -165,8 +201,6 @@ public abstract class BaseChart extends View {
     public void initValues(List<Value> values){
         if (values!=null) {
             v = new float[values.size()];
-        }else {
-
         }
     }
 
@@ -199,5 +233,57 @@ public abstract class BaseChart extends View {
         }
     }
 
+    int mPointerId;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        acquireVelocityTracker(event);
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                mPointerId = event.getPointerId(0);
+
+                break;
+            case MotionEvent.ACTION_UP:
+                final VelocityTracker verTracker = mVelocityTracker;
+                verTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                velocityX = verTracker.getXVelocity(mPointerId);
+                velocityY = verTracker.getYVelocity(mPointerId);
+
+
+                releaseVelocityTracker();
+
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+
+    /**
+     * @param event 向VelocityTracker添加MotionEvent
+     * @see VelocityTracker#obtain()
+     * @see VelocityTracker#addMovement(MotionEvent)
+     */
+    private void acquireVelocityTracker(final MotionEvent event) {
+        if (null == mVelocityTracker) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(event);
+    }
+
+    /**
+     * * 释放VelocityTracker
+     *
+     * @see VelocityTracker#clear()
+     * @see VelocityTracker#recycle()
+     */
+    private void releaseVelocityTracker() {
+        if (null != mVelocityTracker) {
+            mVelocityTracker.clear();
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
 
 }
