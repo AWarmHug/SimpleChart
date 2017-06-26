@@ -50,6 +50,7 @@ public abstract class BaseChart extends View {
      */
     private final int mVelocity = 1000;
 
+    int mPointerId;
 
     protected float velocityX, velocityY;
 
@@ -233,7 +234,6 @@ public abstract class BaseChart extends View {
         }
     }
 
-    int mPointerId;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

@@ -218,8 +218,31 @@ public abstract class BaseLineChart extends BaseChart {
     }
 
     float trueDownX;
+    float trueDownY;
 
     float downX, XX;
+
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                trueDownX = event.getX();
+//                trueDownY = event.getY();
+//                downX = trueDownX + getScrollX();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                if (Math.abs(event.getX() - trueDownX) > Math.abs(event.getY() - trueDownY)) {
+//                    Log.d(TAG, "dispatchTouchEvent: ");
+//                    getParent().requestDisallowInterceptTouchEvent(true);
+//                    return true;
+//                }
+//                break;
+//        }
+//
+//
+//        return super.dispatchTouchEvent(event);
+//
+//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -227,9 +250,9 @@ public abstract class BaseLineChart extends BaseChart {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 trueDownX = event.getX();
+                trueDownY = event.getY();
                 downX = trueDownX + getScrollX();
-
-                if (!mScroller.isFinished()){
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
 
@@ -238,8 +261,20 @@ public abstract class BaseLineChart extends BaseChart {
                 }
 
             case MotionEvent.ACTION_MOVE:
-                XX = event.getX() - downX;
-                scrollTo(-(int) XX, 0);
+                if (Math.abs(event.getX() - trueDownX) > Math.abs(event.getY() - trueDownY)) {
+
+
+                    Log.d(TAG, "onTouchEvent1: ");
+                    XX = event.getX() - downX;
+
+                    getParent().requestDisallowInterceptTouchEvent(true);
+
+                    scrollTo(-(int) XX, 0);
+                }else {
+                    Log.d(TAG, "onTouchEvent1: ");
+                    return false;
+                }
+
                 break;
             case MotionEvent.ACTION_UP:
 
@@ -254,12 +289,12 @@ public abstract class BaseLineChart extends BaseChart {
                 break;
         }
 
-
-        return false;
+        return super.onTouchEvent(event);
     }
 
     /**
      * 只控制X轴的Scroll
+     *
      * @param x
      * @param dx
      */
