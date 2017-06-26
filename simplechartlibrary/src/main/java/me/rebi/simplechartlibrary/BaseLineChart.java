@@ -263,15 +263,12 @@ public abstract class BaseLineChart extends BaseChart {
             case MotionEvent.ACTION_MOVE:
                 if (Math.abs(event.getX() - trueDownX) > Math.abs(event.getY() - trueDownY)) {
 
-
-                    Log.d(TAG, "onTouchEvent1: ");
                     XX = event.getX() - downX;
 
                     getParent().requestDisallowInterceptTouchEvent(true);
 
                     scrollTo(-(int) XX, 0);
                 }else {
-                    Log.d(TAG, "onTouchEvent1: ");
                     return false;
                 }
 
