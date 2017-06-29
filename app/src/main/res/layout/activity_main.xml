@@ -24,14 +24,35 @@
             android:id="@+id/lineChart"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            app:animationTime="2000" />
+            app:animationTime="2000"
+            app:axisLinesWidth="2dp"
+            app:axisTextSize="14sp"
+            app:linesSize="2dp"
+            app:linesColor="@color/colorAccent"
+            app:titleName="折线图"
+            app:titleSize="18sp"
+            app:xName="项目"
+            app:yName="时间比"
+            app:full="false"
+            app:titleColor="@color/colorPrimary"
+            />
 
 
         <me.rebi.simplechartlibrary.BarChart
             android:id="@+id/barChart"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            app:animationTime="3000" />
+            app:animationTime="3000"
+            app:axisLinesWidth="2dp"
+            app:axisTextSize="14sp"
+            app:linesSize="2dp"
+            app:linesColor="@color/colorAccent"
+            app:titleName="条形图"
+            app:titleSize="18sp"
+            app:titleColor="@color/colorPrimary"
+
+
+            />
     </LinearLayout>
 
 </ScrollView>

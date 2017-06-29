@@ -34,10 +34,13 @@ public abstract class BaseLineChart extends BaseChart {
     /**
      * 是x轴每个点的间距,也是bar的宽度
      */
-    protected float xSpace = 100;
+    protected float xSpace = 120;
 
 
-    protected float ySpace = 80;
+    /**
+     * Y轴的空隙，根据高度进行计算
+     */
+    protected float ySpace = 120;
 
     /**
      * x,y轴画笔
@@ -69,6 +72,11 @@ public abstract class BaseLineChart extends BaseChart {
 
     protected String xName = "x轴";
     protected String yName = "y轴";
+
+    float trueDownX;
+    float trueDownY;
+
+    float downX, XX;
 
     /**
      * 左边间隔
@@ -119,9 +127,19 @@ public abstract class BaseLineChart extends BaseChart {
             } else if (attr == R.styleable.BaseLineChart_pointLength) {
                 pointLength = typedArray.getDimensionPixelSize(attr, DisplayUtil.dp2px(context, 5));
 
+            }else if (attr == R.styleable.BaseLineChart_xSpace){
+                xSpace=typedArray.getDimensionPixelSize(attr, DisplayUtil.dp2px(context, 50));
+
+            }else if (attr==R.styleable.BaseLineChart_xName){
+                xName=typedArray.getString(attr);
+            }else if (attr==R.styleable.BaseLineChart_yName){
+                yName=typedArray.getString(attr);
             }
         }
         typedArray.recycle();
+
+        pointLength=axisTextSize/2;
+
         leftSpace = pointLength + axisTextSize * 2;
         bottomSpace = pointLength + axisTextSize + DisplayUtil.dp2px(context, 5);
 
@@ -217,32 +235,7 @@ public abstract class BaseLineChart extends BaseChart {
 
     }
 
-    float trueDownX;
-    float trueDownY;
 
-    float downX, XX;
-
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                trueDownX = event.getX();
-//                trueDownY = event.getY();
-//                downX = trueDownX + getScrollX();
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                if (Math.abs(event.getX() - trueDownX) > Math.abs(event.getY() - trueDownY)) {
-//                    Log.d(TAG, "dispatchTouchEvent: ");
-//                    getParent().requestDisallowInterceptTouchEvent(true);
-//                    return true;
-//                }
-//                break;
-//        }
-//
-//
-//        return super.dispatchTouchEvent(event);
-//
-//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

@@ -101,27 +101,9 @@ public class LineChart extends BaseLineChart {
 
     @Override
     protected void drawBar(Canvas canvas, List<Value> values, float[] v, double proportion) {
-//        for (int i = 0; i < values.size(); i++) {
-//            canvas.drawCircle(leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]), DisplayUtil.dp2px(context, 3), mPaint);
-//            mPaint.setStrokeWidth(DisplayUtil.dp2px(context, 2));
-//            if (i == 0) {
-//                canvas.drawLine(leftSpace, mHeight - bottomSpace, leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]), mPaint);
-//            } else {
-//                canvas.drawLine(leftSpace + xSpace * (i), (float) (mHeight - bottomSpace - proportion * v[i - 1]), leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]), mPaint);
-//            }
-//            textPaint.setTextAlign(Paint.Align.CENTER);
-//            canvas.drawText(String.valueOf(values.get(i).getValue()), leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]) - DisplayUtil.dp2px(context, 5), textPaint);
-//        }
-//        canvas.drawLine(leftSpace + xSpace * (values.size()), mHeight - bottomSpace, leftSpace + xSpace * (values.size()), (float) (mHeight - bottomSpace - proportion * v[values.size() - 1]), mPaint);
-
         path.moveTo(leftSpace, mHeight - bottomSpace);
         for (int i = 0; i < values.size(); i++) {
 
-            pointPaint.setColor(values.get(i).getColor());
-            canvas.drawCircle(leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]), pointSize, pointPaint);
-            textPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(String.valueOf(values.get(i).getValue()), leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]) - pointSize-DisplayUtil.dp2px(context, 3), textPaint);
-//            mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(linesSize);
             mPaint.setColor(lineColor);
@@ -137,6 +119,15 @@ public class LineChart extends BaseLineChart {
         if(full) {
             mPaint.setStyle(Paint.Style.FILL);
             canvas.drawPath(path, mPaint);
+        }
+
+        for (int i = 0; i < values.size(); i++) {
+
+            pointPaint.setColor(values.get(i).getColor());
+            canvas.drawCircle(leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]), pointSize, pointPaint);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText(String.valueOf(values.get(i).getValue()), leftSpace + xSpace * (i + 1), (float) (mHeight - bottomSpace - proportion * v[i]) - pointSize-DisplayUtil.dp2px(context, 3), textPaint);
+
         }
 
     }

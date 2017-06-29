@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
         Value value1 = new Value("吃饭", 9, Color.CYAN);
         Value value2 = new Value("看书", 12, Color.DKGRAY);
         Value value3 = new Value("写代码", 9, Color.BLACK);
-        Value value4 = new Value("睡觉", 80, Color.RED);
-        Value value5 = new Value("发呆", 70, Color.GRAY);
+        Value value4 = new Value("睡觉", 20, Color.RED);
+        Value value5 = new Value("发呆", 25, Color.GRAY);
         List<Value> values = new ArrayList<>();
         values.add(value);
         values.add(value1);

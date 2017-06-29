@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="BaseChart">
-        <attr name="animationTime" format="integer"></attr>
-        <attr name="titleName" format="string|reference"></attr>
-        <attr name="titleSize" format="dimension|reference"></attr>
-        <attr name="titleColor" format="color|reference"></attr>
+        <attr name="animationTime" format="integer" />
+        <attr name="titleName" format="string|reference" />
+        <attr name="titleSize" format="dimension|reference" />
+        <attr name="titleColor" format="color|reference" />
     </declare-styleable>
 
     <declare-styleable name="PieChart">
@@ -18,10 +18,14 @@
         <attr name="pointLength" format="dimension|reference"/>
         <attr name="axisTextSize" format="dimension|reference"/>
         <attr name="axisLinesWidth" format="dimension|reference"/>
+        <attr name="xSpace" format="dimension|reference"/>
+        <attr name="xName" format="string|reference"/>
+        <attr name="yName" format="string|reference"/>
+
     </declare-styleable>
 
     <declare-styleable name="LineChart">
-        <attr name="full" format="boolean"></attr>
+        <attr name="full" format="boolean" />
         <attr name="linesColor" format="color|reference"/>
         <attr name="linesSize" format="dimension|reference"/>
         <attr name="pointColor" format="color|reference"/>
