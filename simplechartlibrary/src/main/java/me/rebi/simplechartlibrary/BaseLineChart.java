@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 import java.util.List;
@@ -77,6 +78,8 @@ public abstract class BaseLineChart extends BaseChart {
     float trueDownY;
 
     float downX, XX;
+
+//    ScrollView
 
     /**
      * 左边间隔
@@ -154,7 +157,7 @@ public abstract class BaseLineChart extends BaseChart {
         textPaint.setTextSize(axisTextSize);
         textPaint.setAntiAlias(true);
 
-        mScroller = new Scroller(context);
+        mScroller = new Scroller(context,new AccelerateDecelerateInterpolator());
         rectF = new RectF();
 
     }
@@ -306,7 +309,6 @@ public abstract class BaseLineChart extends BaseChart {
     @Override
     public void computeScroll() {
         super.computeScroll();
-
         if (mScroller.computeScrollOffset()) {
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             invalidate();

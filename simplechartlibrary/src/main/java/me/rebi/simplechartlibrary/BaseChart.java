@@ -121,11 +121,12 @@ public abstract class BaseChart extends View {
         titlePaint.setTextSize(titleSize);
         titlePaint.setTextAlign(Paint.Align.CENTER);
 //        getResources().getDisplayMetrics().
+        setFocusable(true);
+        setWillNotDraw(false);
         ViewConfiguration configuration = ViewConfiguration.get(context);
-        mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
-
-        mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
         mTouchSlop = configuration.getScaledPagingTouchSlop();
+        mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
+        mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
 
     }
 
@@ -238,7 +239,7 @@ public abstract class BaseChart extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        acquireVelocityTracker(event);
+        initVelocityTracker(event);
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 mPointerId = event.getPointerId(0);
@@ -265,11 +266,12 @@ public abstract class BaseChart extends View {
      * @see VelocityTracker#obtain()
      * @see VelocityTracker#addMovement(MotionEvent)
      */
-    private void acquireVelocityTracker(final MotionEvent event) {
+    private void initVelocityTracker(final MotionEvent event) {
         if (null == mVelocityTracker) {
             mVelocityTracker = VelocityTracker.obtain();
         }
         mVelocityTracker.addMovement(event);
+
     }
 
     /**
